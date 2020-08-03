@@ -1,7 +1,8 @@
 import Vue from 'vue';
 
 /** 暗号: 老杨喊你来搬砖
- * 构建函数 返回组件实例（类似于 react 的 高阶组件）
+ ** 作业: 使用 Vue.extend() 方式实现 create 方法
+ * 构建函数, 返回组件实例（类似于 react 的 高阶组件）
  * @param {Object} Component 组件配置对象
  * @param {Object} props 传递给它的属性
  */
@@ -10,6 +11,7 @@ function create(Component, props) {
   // 方法一: 通过配置 Vue 实例的方法构建组件实例
   /*
   const vm = new Vue({
+    // h 是 createElement
     render: h => h(Component, { props })
   }).$mount();
   // 注意，这里不设置挂载目标，依然可以转换 vnode 为真实节点 $el
