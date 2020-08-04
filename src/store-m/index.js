@@ -4,9 +4,25 @@ import Vuex from './vuex-m';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {},
-  mutations: {},
-  actions: {},
-  getters: {},
+  state: {
+    counter: 0
+  },
+  mutations: {
+    add(state) {
+      state.counter++;
+    }
+  },
+  actions: {
+    add({ commit }) {
+      setTimeout(() => {
+        commit('add');
+      }, 1000);
+    }
+  },
+  getters: {
+    doubleCounter(state) {
+      return state.counter * 2;
+    }
+  },
   modules: {}
 });
