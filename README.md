@@ -1,5 +1,3 @@
-# lesson1-vue-study
-
 ## Project setup
 ```
 npm install
