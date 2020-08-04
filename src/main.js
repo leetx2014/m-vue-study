@@ -4,13 +4,15 @@ import App from './App.vue'
 // import router from './router'
 import router from './router-m'
 
+import store from './store'
+
 Vue.config.productionTip = false
 
 // 事件总线
 Vue.prototype.$bus = new Vue()
 
 new Vue({
-  // 挂载
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')
