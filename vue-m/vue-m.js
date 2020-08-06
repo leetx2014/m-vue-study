@@ -202,8 +202,6 @@ class Compile {
     });
   }
 
-  inputValue(node, exp, value) {}
-
   isEventDir(attr) {
     return attr.indexOf('@') === 0;
   }
