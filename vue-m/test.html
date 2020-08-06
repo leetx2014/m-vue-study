@@ -9,8 +9,10 @@
 <body>
   <div id="app">
     <p>{{counter}}</p>
-    <p k-text="counter"></p>
     <p k-html="desc"></p>
+    <p @click="addCounter">{{counter}}</p>
+    <p k-html="desc"></p>
+    <input type="text" k-model="counter">
   </div>
 </body>
 
@@ -23,12 +25,18 @@
     data: {
       counter: 1,
       desc: '<span style="color:red">hello word</span>'
-    }
+    },
+    methods: {
+      addCounter() {
+        console.log(this);
+        this.counter++;
+      }
+    },
   });
 
-  setInterval(() => {
-    app.counter++;
-  }, 1000);
+  // setInterval(() => {
+  //   app.counter++;
+  // }, 1000);
 
 </script>
 

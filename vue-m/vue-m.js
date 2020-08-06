@@ -8,16 +8,20 @@ class Vue {
     this.$options = options;
     this.$data = options.data;
     this.$el = document.querySelector(options.el);
+    const methods = options.methods || {};
 
     // 1. 将 data 做响应式处理
     observe(this.$data);
 
     // 2. 为 $data 做代理
     proxy(this, '$data');
+    // 将 methods 的 key 赋值给 this
+    Object.keys(methods).forEach(k => {
+      this[k] = methods[k];
+    });
 
     // 3. 编译模版
     new Compile(this.$el, this);
-    console.log('Vue', this);
   }
 }
 
@@ -67,10 +71,10 @@ function defineReactive(obj, key, value) {
         // 如果传入的 newValue 也是对象，也需要做响应式处理
         observe(newValue);
         value = newValue;
-      }
 
-      // 通知更新
-      dep.notify();
+        // 通知更新
+        dep.notify();
+      }
     }
   });
 }
@@ -131,10 +135,24 @@ class Compile {
         const dir = attrName.substring(2); // xxx
         // 指令实际操作方法
         this[dir] && this[dir](node, exp);
+        node.removeAttribute(attrName);
+      } else if (this.isEventDir(attrName)) {
+        // 处理事件
+        const dir = attrName.substring(1);
+        this.eventHandler(node, exp, dir);
+        // 删除属性
+        node.removeAttribute(attrName);
       }
-
-      // 处理事件
     });
+  }
+
+  // 事件处理器
+  eventHandler(node, exp, eventType) {
+    const eventFn = this.$vm[exp];
+    if (eventFn) {
+      // this 要指向 vue 实例
+      node.addEventListener(eventType, eventFn.bind(this.$vm));
+    }
   }
 
   // 编译文本
@@ -147,7 +165,7 @@ class Compile {
   update(node, exp, dir) {
     const updater = this[`${dir}Updater`];
     // 初始化
-    updater && updater(node, this.$vm[exp]);
+    updater && updater(node, this.$vm[exp], exp, this.$vm);
 
     // 更新
     new Watcher(this.$vm, exp, function (val) {
@@ -170,6 +188,24 @@ class Compile {
   // k-text 对应操作函数
   textUpdater(node, val) {
     node.textContent = val;
+  }
+
+  model(node, exp) {
+    this.update(node, exp, 'model');
+  }
+
+  modelUpdater(node, val, exp, vm) {
+    node.value = val;
+    // 添加 input 事件监听，用于 视图 -> 数据 的更新
+    node.addEventListener('input', e => {
+      vm[exp] = e.target.value;
+    });
+  }
+
+  inputValue(node, exp, value) {}
+
+  isEventDir(attr) {
+    return attr.indexOf('@') === 0;
   }
 
   isDirective(attr) {
